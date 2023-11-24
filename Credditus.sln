@@ -3,12 +3,28 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4416BB78-FBAC-4A6A-85F1-A39D617189AD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Credditus.Api", "src\Credditus.Api\Credditus.Api.csproj", "{51264A16-0D94-4DEA-9530-80008460A6F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{51264A16-0D94-4DEA-9530-80008460A6F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51264A16-0D94-4DEA-9530-80008460A6F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51264A16-0D94-4DEA-9530-80008460A6F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51264A16-0D94-4DEA-9530-80008460A6F5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{51264A16-0D94-4DEA-9530-80008460A6F5} = {4416BB78-FBAC-4A6A-85F1-A39D617189AD}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {02CF67A2-B3BD-4096-B768-739038DA601C}
 	EndGlobalSection
 EndGlobal
