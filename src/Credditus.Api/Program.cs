@@ -1,12 +1,7 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Text;
-using Newtonsoft.Json;
 using Confluent.Kafka;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,6 +63,9 @@ public class ProducerKafka
 {
     public string SendMessageByKafka(string message)
     {
+        User user = new() { Address = "Address", Email = "Email", FirstName = "FirstName", LastName = "LastName", Password = "Password" };
+        message =  JsonConvert.SerializeObject(user);
+
         var config = new ProducerConfig { BootstrapServers = "localhost:9092" };
 
         using (var producer = new ProducerBuilder<Null, string>(config).Build())
@@ -75,11 +73,11 @@ public class ProducerKafka
             try
             {
                 var sendResult = producer
-                                    .ProduceAsync("teste", new Message<Null, string> { Value = message })
+                                    .ProduceAsync("teste", new Message<Null, string> { Value = message.ToString() })
                                         .GetAwaiter()
                                             .GetResult();
 
-                return $"Mensagem '{sendResult.Value}' de '{sendResult.TopicPartitionOffset}'";
+                return $"Mensagem '{sendResult.Value}' de '{sendResult.TopicPartitionOffset}' on Partition: {sendResult.Partition} with Offset: {sendResult.Offset}";
             }
             catch (ProduceException<Null, string> e)
             {
@@ -91,29 +89,28 @@ public class ProducerKafka
     }
 }
 
-
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
 
 
-
 public class UserCreatedHandler : IKafkaHandler<string, User>
 {
     public async Task HandleAsync(string key, User value)
     {
-        Console.WriteLine($"Key: {key}, Value: {value}");
+        Console.WriteLine($"Key: {key}, Value: {value.Email}");
     }
 }
+
 public class User
 {
     public Guid Id { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string Address { get; set; }
+    public required string Email { get; set; }
+    public required string Password { get; set; }
+    public required string FirstName { get; set; }
+    public required string LastName { get; set; }
+    public required string Address { get; set; }
 }
 public static class RegisterServiceExtensions
 {
@@ -122,7 +119,7 @@ public static class RegisterServiceExtensions
     {
         services.AddScoped<IKafkaHandler<Tk, Tv>, THandler>();
 
-        services.AddHostedService<BackGroundKafkaConsumer<Tk, Tv>>();
+       services.AddHostedService<BackGroundKafkaConsumer<Tk, Tv>>();
 
         services.Configure(configAction);
 
@@ -131,7 +128,7 @@ public static class RegisterServiceExtensions
 }
 public class KafkaConsumerConfig<Tk, Tv> : ConsumerConfig
 {
-    public string Topic { get; set; }
+    public required string Topic { get; set; }
     public KafkaConsumerConfig()
     {
         AutoOffsetReset = Confluent.Kafka.AutoOffsetReset.Earliest;
@@ -150,17 +147,18 @@ internal sealed class KafkaDeserializer<T> : IDeserializer<T>
         {
             if (data.Length > 0)
                 throw new ArgumentException("The data is null not null.");
-            return default;
+            return default!;
         }
 
         if (typeof(T) == typeof(Ignore))
-            return default;
+            return default!;
 
         var dataJson = Encoding.UTF8.GetString(data);
 
         return JsonConvert.DeserializeObject<T>(dataJson);
     }
 }
+
 public class BackGroundKafkaConsumer<TK, TV> : BackgroundService
 {
     private readonly KafkaConsumerConfig<TK, TV> _config;
