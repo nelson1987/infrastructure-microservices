@@ -64,7 +64,7 @@ public class ProducerKafka
     public string SendMessageByKafka(string message)
     {
         User user = new() { Address = "Address", Email = "Email", FirstName = "FirstName", LastName = "LastName", Password = "Password" };
-        message =  JsonConvert.SerializeObject(user);
+        message = JsonConvert.SerializeObject(user);
 
         var config = new ProducerConfig { BootstrapServers = "localhost:9092" };
 
@@ -119,7 +119,7 @@ public static class RegisterServiceExtensions
     {
         services.AddScoped<IKafkaHandler<Tk, Tv>, THandler>();
 
-       services.AddHostedService<BackGroundKafkaConsumer<Tk, Tv>>();
+        services.AddHostedService<BackGroundKafkaConsumer<Tk, Tv>>();
 
         services.Configure(configAction);
 
