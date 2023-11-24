@@ -1,6 +1,10 @@
 # infrastructure-microservices
 Criação de uma aplicação com microsserviços
 
+# markdown
+https://dillinger.io/
+https://stackedit.io/app#
+
 # Criação do Kafka
 https://www.baeldung.com/ops/kafka-new-topic-docker-compose
 https://cursos.alura.com.br/forum/topico-sugestao-docker-compose-kafka-zookeeper-e-kakfa-ui-279740
@@ -30,7 +34,12 @@ mkdir test
 ```sh
 dotnet new sln -n Credditus
 dotnet new xunit -n Credditus.UnitTests
+dotnet new webapi -n Credditus.Api -minimal
 dotnet new gitignore
+dotnet run --project src/Credditus.Api/Credditus.Api.csproj dev-certs https --trust
+dotnet sln add ./ProjetoTeste.Tests/ProjetoTeste.Tests.csproj 
+dotnet add ./Alura.Estacionamento.Tests/Alura.Estacionamento.Tests.csproj reference ./Alura.Estacionamento/Alura.Estacionamento.csproj 
+dotnet add package Microsoft.EntityFrameworkCore --version 6.0.10
 ```
 
 ## Docker
