@@ -48,3 +48,6 @@ cd ~/
 docker-compose up -d --build
 docker compose down
 ```
+
+## biography
+https://renatogroffe.medium.com/net-core-3-1-apache-kafka-exemplos-utilizando-mensageria-21fad6e0aab
