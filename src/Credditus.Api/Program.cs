@@ -16,8 +16,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddKafkaConsumer<string, User, UserCreatedHandler>(p =>
 {
-    p.Topic = "users";
-    p.GroupId = "users_group";
+    p.Topic = "teste";
+    p.GroupId = "teste_group";
     p.BootstrapServers = "localhost:9092";
 });
 
