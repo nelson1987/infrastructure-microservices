@@ -34,6 +34,6 @@ public class GetCountriesTests
         // Act
         var result = (await CountryEndpoints.GetCountries(pageIndex, pageSize, _countryMapper, _countryService)) as Ok<List<Country>>;
         // Assert
-        expectedMappedCountries.Should().BeEquivalentTo(result!.Value);
+        expectedMappedCountries.Should().Be(result!.Value);
     }
 }
