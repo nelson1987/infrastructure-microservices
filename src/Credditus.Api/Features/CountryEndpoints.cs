@@ -1,15 +1,49 @@
-namespace AspNetCore8MinimalApis.Endpoints;
-public class Country { }
-public interface ICountryMapper
+using FluentValidation;
+using FluentValidation.Results;
+using System.Text.RegularExpressions;
+
+namespace Credditus.Api.Features;
+public class AddressValidator : AbstractValidator<Address>
 {
-    List<Country> Map(List<CountryDto> countries);
+    public AddressValidator()
+    {
+        RuleFor(x => x.Name)
+        .NotEmpty().WithMessage("{PropertyName} is required")
+ .Custom((name, context) =>
+ {
+     Regex rg = new Regex("<.*?>"); // Matches HTML tags
+     if (rg.Matches(name).Count > 0)
+     {
+         // Raises an error
+         context.AddFailure(
+         new ValidationFailure("Name", "The parameter has invalid content")
+         );
+     }
+ });
+        RuleFor(x => x.FlagUri)
+ .NotEmpty()
+ .WithMessage("{PropertyName} is required")
+ .Matches("^(https:\\/\\/.)[-a-zA-Z0-9@:%._\\+~#=]{ 2,256}\\.[a-z]{ 2,6}\\b([-a - zA - Z0 - 9@:% _\\+.~#?&//=]*)$")
+ .WithMessage("{PropertyName} must match an HTTPS URL");
+    }
 }
-public interface ICountryService
+public interface IAddressMapper
 {
-    Task<List<CountryDto>> GetAllAsync(PagingDto pagging);
+    List<AddressDto> Map(List<Address> countries);
+}
+public class AddressMapper : IAddressMapper
+{
+    public List<AddressDto> Map(List<Address> countries)
+    {
+        throw new NotImplementedException();
+    }
+}
+public interface IAddressService
+{
+    Task<List<Address>> GetAllAsync(PagingDto pagging);
 }
 public record PagingDto(int PageIndex, int PageSize);
-public record CountryDto();
+public record AddressDto();
 public static class CountryEndpoints
 {
     public static RouteGroupBuilder GroupCountries(this
@@ -36,11 +70,11 @@ RouteGroupBuilder group)
         });
         return group;
     }
-    public static async Task<IResult> GetCountries(
+    public static async Task<IResult> GetAddresses(
        int? pageIndex,
        int? pageSize,
-       ICountryMapper mapper,
-       ICountryService countryService)
+       IAddressMapper mapper,
+       IAddressService countryService)
     {
         var paging = new PagingDto(pageIndex ?? 1,
                                     pageSize ?? 10);

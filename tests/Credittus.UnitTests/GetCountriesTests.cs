@@ -1,5 +1,5 @@
-using AspNetCore8MinimalApis.Endpoints;
 using AutoFixture;
+using Credditus.Api.Features;
 using ExpectedObjects;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -9,13 +9,13 @@ namespace Credittus.UnitTests;
 
 public class GetCountriesTests
 {
-    private readonly ICountryMapper _countryMapper;
-    private readonly ICountryService _countryService;
+    private readonly IAddressMapper _countryMapper;
+    private readonly IAddressService _countryService;
     private readonly Fixture _fixture;
     public GetCountriesTests()
     {
-        _countryMapper = Substitute.For<ICountryMapper>();
-        _countryService = Substitute.For<ICountryService>();
+        _countryMapper = Substitute.For<IAddressMapper>();
+        _countryService = Substitute.For<IAddressService>();
         _fixture = new Fixture();
     }
     [Fact]
@@ -25,14 +25,14 @@ public class GetCountriesTests
         int? pageIndex = null;
         int? pageSize = null;
         var expectedPaging = new PagingDto(PageIndex: 1, PageSize: 10).ToExpectedObject();
-        var countries = _fixture.CreateMany<CountryDto>(2).ToList();
+        var countries = _fixture.CreateMany<Address>(2).ToList();
         var expectedCountries = countries.ToExpectedObject();
-        var mappedCountries = _fixture.CreateMany<Country>(2).ToList();
+        var mappedCountries = _fixture.CreateMany<AddressDto>(2).ToList();
         var expectedMappedCountries = mappedCountries.ToExpectedObject();
         _countryService.GetAllAsync(Arg.Any<PagingDto>()).Returns(x => countries);
-        _countryMapper.Map(Arg.Any<List<CountryDto>>()).Returns(x => mappedCountries);
+        _countryMapper.Map(Arg.Any<List<Address>>()).Returns(x => mappedCountries);
         // Act
-        var result = (await CountryEndpoints.GetCountries(pageIndex, pageSize, _countryMapper, _countryService)) as Ok<List<Country>>;
+        var result = (await CountryEndpoints.GetAddresses(pageIndex, pageSize, _countryMapper, _countryService)) as Ok<List<Country>>;
         // Assert
         expectedMappedCountries.Should().Be(result!.Value);
     }
