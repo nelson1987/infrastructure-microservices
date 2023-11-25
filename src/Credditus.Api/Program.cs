@@ -2,6 +2,7 @@ using Confluent.Kafka;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Text;
+using AspNetCore8MinimalApis.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,15 @@ var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
+
+app.MapGroup("/countries").GroupCountries();
+
+app.MapPost("/Addresses", ([FromBody] Address address) => {
+ return Results.Created();
+});
+app.MapGet("/provinces/{provinceId:int}", 
+    (int provinceId) =>
+    $"ProvinceId {provinceId}");
 
 app
 .MapPost("/producer", (string msg) =>
@@ -201,3 +211,4 @@ public class BackGroundKafkaConsumer<TK, TV> : BackgroundService
         }
     }
 }
+public record Address();
