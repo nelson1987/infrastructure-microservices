@@ -40,6 +40,10 @@ app.MapPost("/Addresses", ([FromBody] Address address) =>
 {
     return Results.Ok();
 });
+app.MapPut("/Addresses/{addressId}", ([FromRoute] int addressId, [FromForm] Address address) =>
+{
+    return Results.NoContent();
+});
 app.MapGet("/provinces/{provinceId:int}",
     (int provinceId) =>
     $"ProvinceId {provinceId}");
@@ -48,7 +52,7 @@ app
 .MapPost("/producer", (string msg) =>
 {
     var kafka = new ProducerKafka();
-    return kafka.SendMessageByKafka(msg);
+    return kafka.SendMessageByKafka();
 })
 .WithName("Producer")
 .WithOpenApi();
@@ -73,10 +77,10 @@ app.Run();
 
 public class ProducerKafka
 {
-    public string SendMessageByKafka(string message)
+    public string SendMessageByKafka()
     {
         User user = new() { Address = "Address", Email = "Email", FirstName = "FirstName", LastName = "LastName", Password = "Password" };
-        message = JsonConvert.SerializeObject(user);
+        string message = JsonConvert.SerializeObject(user);
 
         var config = new ProducerConfig { BootstrapServers = "localhost:9092" };
 
@@ -162,9 +166,9 @@ internal sealed class KafkaDeserializer<T> : IDeserializer<T>
     {
         if (typeof(T) == typeof(Null))
         {
-            if (data.Length > 0)
-                throw new ArgumentException("The data is null not null.");
-            return default!;
+            return data.Length <= 0
+                ? default!
+                : throw new ArgumentException("The data is null not null.");
         }
 
         if (typeof(T) == typeof(Ignore))
@@ -218,4 +222,20 @@ public class BackGroundKafkaConsumer<TK, TV> : BackgroundService
         }
     }
 }
-public record Address();
+public class Address
+{
+    [FromRoute]
+    public int AddressId { get; set; }
+    [FromForm]
+    public int StreetNumber { get; set; }
+    [FromForm]
+    public required string StreetName { get; set; }
+    [FromForm]
+    public required string StreetType { get; set; }
+    [FromForm]
+    public required string City { get; set; }
+    [FromForm]
+    public required string Country { get; set; }
+    [FromForm]
+    public int PostalCode { get; set; }
+};
