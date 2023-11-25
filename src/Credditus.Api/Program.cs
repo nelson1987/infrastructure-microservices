@@ -1,8 +1,9 @@
+using AspNetCore8MinimalApis.Endpoints;
 using Confluent.Kafka;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Text;
-using AspNetCore8MinimalApis.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,10 +36,11 @@ var summaries = new[]
 
 app.MapGroup("/countries").GroupCountries();
 
-app.MapPost("/Addresses", ([FromBody] Address address) => {
- return Results.Created();
+app.MapPost("/Addresses", ([FromBody] Address address) =>
+{
+    return Results.Ok();
 });
-app.MapGet("/provinces/{provinceId:int}", 
+app.MapGet("/provinces/{provinceId:int}",
     (int provinceId) =>
     $"ProvinceId {provinceId}");
 
@@ -107,9 +109,14 @@ record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 
 public class UserCreatedHandler : IKafkaHandler<string, User>
 {
-    public async Task HandleAsync(string key, User value)
+    public void Handle(string key, User value)
     {
         Console.WriteLine($"Key: {key}, Value: {value.Email}");
+    }
+
+    Task IKafkaHandler<string, User>.Handle(string key, User value)
+    {
+        throw new NotImplementedException();
     }
 }
 
@@ -147,7 +154,7 @@ public class KafkaConsumerConfig<Tk, Tv> : ConsumerConfig
 }
 public interface IKafkaHandler<Tk, Tv>
 {
-    Task HandleAsync(Tk key, Tv value);
+    Task Handle(Tk key, Tv value);
 }
 internal sealed class KafkaDeserializer<T> : IDeserializer<T>
 {
@@ -200,7 +207,7 @@ public class BackGroundKafkaConsumer<TK, TV> : BackgroundService
 
                     if (result != null)
                     {
-                        await _handler.HandleAsync(result.Message.Key, result.Message.Value);
+                        await _handler.Handle(result.Message.Key, result.Message.Value);
 
                         consumer.Commit(result);
 
