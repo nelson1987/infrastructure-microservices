@@ -38,8 +38,21 @@ public class AddressMapper : IAddressMapper
         throw new NotImplementedException();
     }
 }
+public class AddressService : IAddressService
+{
+    public object CreateOrUpdate(List<AddressDto> countryDto)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<List<Address>> GetAllAsync(PagingDto pagging)
+    {
+        throw new NotImplementedException();
+    }
+}
 public interface IAddressService
 {
+    object CreateOrUpdate(List<AddressDto> countryDto);
     Task<List<Address>> GetAllAsync(PagingDto pagging);
 }
 public record PagingDto(int PageIndex, int PageSize);

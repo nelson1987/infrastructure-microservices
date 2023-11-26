@@ -11,6 +11,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IValidator<Address>, AddressValidator>();
 builder.Services.AddScoped<IAddressMapper, AddressMapper>();
+builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddKafkaConsumer<string, Address, AddressCreatedHandler>(p =>
 {
     p.Topic = "address";
@@ -38,13 +39,18 @@ app.MapGroup("/countries").GroupCountries();
 
 app.MapPost("/Addresses", ([FromBody] Address address,
     [FromServices] IValidator<Address> validator,
-    [FromServices] IAddressMapper mapper) =>
+    [FromServices] IAddressMapper mapper,
+    [FromServices] IAddressService addressService
+    ) =>
 {
     var validationResult = validator.Validate(address);
     if (validationResult.IsValid)
     {
         var countryDto = mapper.Map(new List<Address> { address });
-        Results.Created(string.Empty, string.Empty);
+        return Results.CreatedAtRoute("countryById", new
+        {
+            Id = addressService.CreateOrUpdate(countryDto)
+        });
     }
     return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
 });
