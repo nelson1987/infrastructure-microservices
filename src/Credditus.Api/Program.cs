@@ -1,4 +1,5 @@
-﻿using Credditus.Api.Features;
+﻿using BankAccounts;
+using Credditus.Api.Features;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -71,15 +72,8 @@ app
 
 
 
-app.MapGroup("/accounts").GroupBankAccount();
+app.MapGroup("/accounts")
+    .GroupBankAccount();
+app.MapGroup("/transactions")
+    .GroupTransaction();
 app.Run();
-public static class BankAccountEndpoints
-{
-    public static RouteGroupBuilder GroupBankAccount(this RouteGroupBuilder group)
-    {
-        group.MapGet("/", () => "");
-        group.MapPost("/create", () => "");
-        group.MapPut("/update", () => "");
-        return group;
-    }
-}

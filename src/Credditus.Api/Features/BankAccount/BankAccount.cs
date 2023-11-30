@@ -5,15 +5,17 @@ using FluentValidation;
 
 namespace BankAccounts
 {
-    public static class BankAccountEndpoints 
-    { 
+    public static class BankAccountEndpoints
+    {
         public static RouteGroupBuilder GroupBankAccount(this RouteGroupBuilder group)
-        {            
-            group.MapGet("/", () => "");
+        {
+            group.MapGet("/", () => "");//GerarExtratoPorAgencia
+            group.MapPost("/create", () => "");
+            group.MapPut("/update", () => "");
             return group;
         }
     }
-    
+
     public interface IBankAccountRepository
     {
         Task<BankAccount> Create(BankAccount entity);
@@ -28,7 +30,7 @@ namespace BankAccounts
         {
             CreateMap<BankAccount, CreateBankAccountRequest>()
             .ForMember(x => x.Name, opt => opt.MapFrom(x => x.Name));
-            
+
             CreateMap<CreateBankAccountResponse, BankAccount>()
             .ForMember(x => x.Name, opt => opt.MapFrom(x => x.Name));
         }
@@ -37,7 +39,7 @@ namespace BankAccounts
 
 namespace BankAccounts.CreateAccount
 {
-    public record  CreateBankAccountRequest(string Name);
+    public record CreateBankAccountRequest(string Name);
     public class CreateBankAccountValidator : AbstractValidator<CreateBankAccountRequest>
     {
         public CreateBankAccountValidator()
@@ -47,7 +49,8 @@ namespace BankAccounts.CreateAccount
     }
 
     public record CreateBankAccountResponse(string Name);
-    public class CreateBankAccountHandler {
+    public class CreateBankAccountHandler
+    {
         private readonly IBankAccountRepository _bankAccountService;
 
         public CreateBankAccountHandler(IBankAccountRepository bankAccountService)
@@ -58,9 +61,9 @@ namespace BankAccounts.CreateAccount
         public async Task<IResult> Handle(CreateBankAccountRequest request, CancellationToken cancellationToken)
         {
             var criado = await _bankAccountService.Create(request.MapTo<BankAccount>());
-            return Results.Ok(criado.MapTo<CreateBankAccountResponse>() );
+            return Results.Ok(criado.MapTo<CreateBankAccountResponse>());
         }
-     }
+    }
 }
 public static class ObjectMapper
 {
