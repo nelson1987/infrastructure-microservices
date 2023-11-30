@@ -24,9 +24,9 @@ public interface ITransacaoRepository
 }
 public class Transacao
 {
-    public string Parte { get; set}
-    public string ContraParte { get; set}
-    public TipoTransacao Tipo { get; set}
+    public string Parte { get; set; }
+    public string ContraParte { get; set; }
+    public TipoTransacao Tipo { get; set; }
 }
 public enum TipoTransacao
 {
