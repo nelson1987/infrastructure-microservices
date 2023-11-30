@@ -7,15 +7,27 @@ public class TransacaoService
         _repository = repository;
     }
 
-    public async Task CriarTransacao()
+    public async Task CriarTransacao(string debitante, string creditante, TipoTransacao tipo)
     {
-        var transacao = new Transacao()
+        debitante = "a1";
+        creditante = "b4";
+        tipo = TipoTransacao.TransferenciaInterna;
+        var transacaoDebito = new Transacao()
         {
-            Parte = "a1",
-            ContraParte = "b4",
-            Tipo = TipoTransacao.TransferenciaInterna
+            Parte = debitante,
+            ContraParte = creditante,
+            Tipo = tipo,
+            Debito = true
         };
-        await _repository.Create(transacao);
+        var transacaoCredito = new Transacao()
+        {
+            Parte = creditante,
+            ContraParte = debitante,
+            Tipo = tipo,
+            Debito = true
+        };
+        await _repository.Create(transacaoCredito);
+        await _repository.Create(transacaoDebito);
     }
 }
 public interface ITransacaoRepository
@@ -24,9 +36,11 @@ public interface ITransacaoRepository
 }
 public class Transacao
 {
-    public string Parte { get; set; }
-    public string ContraParte { get; set; }
-    public TipoTransacao Tipo { get; set; }
+    public string Parte { get; internal set; }
+    public string ContraParte { get; internal set; }
+    public decimal Valor { get; internal set; }
+    public TipoTransacao Tipo { get; internal set; }
+    public bool Debito { get; internal set; }
 }
 public enum TipoTransacao
 {
@@ -35,3 +49,4 @@ public enum TipoTransacao
 //GerarExtrato
 //CriarConta
 //CriarTransacao
+public record TransferenciaRequest(string Parte, string ContraParte, decimal Valor, TipoTransacao Tipo, bool Debito);
