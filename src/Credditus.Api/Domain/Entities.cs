@@ -49,4 +49,11 @@ public enum TipoTransacao
 //GerarExtrato
 //CriarConta
 //CriarTransacao
-public record TransferenciaRequest(string Parte, string ContraParte, decimal Valor, TipoTransacao Tipo, bool Debito);
+public record TransferenciaRequest(string Parte, string ContraParte, TipoTransacao Tipo, bool Debito)
+{
+    public decimal Valor { get; set; }
+    public void ChangeValor(decimal valor)
+    {
+        Valor = valor;
+    }
+};

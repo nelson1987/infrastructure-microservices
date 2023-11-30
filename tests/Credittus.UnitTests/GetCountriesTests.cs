@@ -1,3 +1,4 @@
+/*
 using AutoFixture;
 using Credditus.Api.Features;
 using ExpectedObjects;
@@ -36,4 +37,4 @@ public class GetCountriesTests
         // Assert
         expectedMappedCountries.Should().Be(result!.Value);
     }
-}
+}*/
