@@ -62,4 +62,18 @@ app
 .WithName("Producer")
 .WithOpenApi();
 
+
+
+
+app.MapGroup("/accounts").GroupBankAccount();
 app.Run();
+public static class BankAccountEndpoints
+{
+    public static RouteGroupBuilder GroupBankAccount(this RouteGroupBuilder group)
+    {
+        group.MapGet("/", () => "");
+        group.MapPost("/create", () => "");
+        group.MapPut("/update", () => "");
+        return group;
+    }
+}

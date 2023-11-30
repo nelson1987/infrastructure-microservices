@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 public class BackGroundKafkaConsumer<TK, TV> : BackgroundService
 {
     private readonly KafkaConsumerConfig<TK, TV> _config;
-    private IKafkaHandler<TK, TV> _handler;
+    private IKafkaHandler<TK, TV> _handler{get; set;}
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
     public BackGroundKafkaConsumer(IOptions<KafkaConsumerConfig<TK, TV>> config,

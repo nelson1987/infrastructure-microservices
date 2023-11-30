@@ -32,7 +32,7 @@ public class GetCountriesTests
         _countryService.GetAllAsync(Arg.Any<PagingDto>()).Returns(x => countries);
         _countryMapper.Map(Arg.Any<List<Address>>()).Returns(x => mappedCountries);
         // Act
-        var result = (await CountryEndpoints.GetAddresses(pageIndex, pageSize, _countryMapper, _countryService)) as Ok<List<Country>>;
+        var result = (await CountryEndpoints.GetAddresses(pageIndex, pageSize, _countryMapper, _countryService)) as Ok<List<Address>>;
         // Assert
         expectedMappedCountries.Should().Be(result!.Value);
     }
