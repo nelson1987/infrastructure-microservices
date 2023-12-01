@@ -84,10 +84,16 @@ REMOVER um commit
 git log
 git reset --hard <id_do_commit_anterior>
 
-README-MARKDOWN
+# README-MARKDOWN
 https://github.com/alura-cursos/3386-git-github/blob/main/README.md?plain=1
 https://www.alura.com.br/artigos/escrever-bom-readme?_gl=1*18ny3le*_ga*NjYyMzY0NDQwLjE2OTUyMjk4MzQ.*_ga_1EPWSW3PCS*MTcwMDg2MzA0My4yOS4xLjE3MDA4NjUyMjYuMC4wLjA.*_fplc*cTdiZTBNbHFzeEtONWE4Q01Rb2VLOCUyQll0QXRBZkxXSkE5MFBocUN3cWhPSVFhQWdMdXc3NU9IVGJHYjlNZkFaclBTQktKTnZlQ0hBMFI0MUpmYktqa05TSGl3eUtWcWpPYTFBZ3JjUXpITWtLNTdFM2w2S1NaRFdxVndRVXclM0QlM0Q.
 https://www.alura.com.br/artigos/como-criar-um-readme-para-seu-perfil-github?_gl=1*ol6kud*_ga*NjYyMzY0NDQwLjE2OTUyMjk4MzQ.*_ga_1EPWSW3PCS*MTcwMDg2MzA0My4yOS4xLjE3MDA4NjUyMzkuMC4wLjA.*_fplc*cTdiZTBNbHFzeEtONWE4Q01Rb2VLOCUyQll0QXRBZkxXSkE5MFBocUN3cWhPSVFhQWdMdXc3NU9IVGJHYjlNZkFaclBTQktKTnZlQ0hBMFI0MUpmYktqa05TSGl3eUtWcWpPYTFBZ3JjUXpITWtLNTdFM2w2S1NaRFdxVndRVXclM0QlM0Q.
 
 https://slides.com/daianealvesrj/software-livre-para-empreendedores
 https://cursos.alura.com.br/course/git-github-branching-conflitos-pull-requests/task/57949
+
+# Versioning 
+https://renatogroffe.medium.com/net-7-minimal-apis-versionando-apis-rest-de-forma-descomplicada-f14cde4bf3a5
+
+# OpenApiGenerator
+https://github.com/dotnet/aspnetcore/blob/7e9b1492baa02211842422566c0e8710886cace1/src/OpenApi/src/OpenApiGenerator.cs
