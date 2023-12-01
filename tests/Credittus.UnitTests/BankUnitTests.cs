@@ -19,7 +19,50 @@ Acessar Extrato
 Realizar Transferencia
 Imprimir Comprovante
 */
-
+public class Conta
+{
+    public string Documento { get; set; }
+    public string Email { get; set; }
+}
+public class Movimentacao { }
+public interface IMovimentacaoRepository
+{
+    /// <summary>
+    /// Listar Extrato por Filtro
+    /// </summary>
+    /// <param name="conta"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<List<Movimentacao>?> ListMovimentacaoByFilterAsync(string conta, CancellationToken cancellationToken);
+    /// <summary>
+    /// Criar Movimentacao - Realizar Transferencia
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task CreateAsync(Movimentacao movimentacao, CancellationToken cancellationToken);
+    /// <summary>
+    /// Imprimir Comprovante
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<Movimentacao?> GetMovimentacaoByIdAsync(Guid id, CancellationToken cancellationToken);
+}
+public interface IContaRepository
+{
+    /// <summary>
+    /// Criar Conta
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task CreateAsync(Conta conta, CancellationToken cancellationToken);
+    /// <summary>
+    /// Cancelar Conta
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task CancelAsync(Conta conta, CancellationToken cancellationToken);
+}
 /// <summary>
 /// Criar Conta
 /// </summary>
@@ -42,9 +85,18 @@ public class CriaContaCommandTests
 
 public class CriaContaCommandHandler
 {
+    private readonly IContaRepository _repository;
+
+    public CriaContaCommandHandler(IContaRepository repository)
+    {
+        _repository = repository;
+    }
+
     public async Task<Result> Handle(CriaContaCommand request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var conta = request.MapTo<Conta>();
+        await _repository.CreateAsync(conta, cancellationToken);
+        return Result.Ok();
     }
 }
 public class CriaContaCommandHandlerTests
@@ -55,6 +107,7 @@ public class CriaContaCommandHandlerTests
     private readonly CancellationToken _cancellationToken = CancellationToken.None;
     public CriaContaCommandHandlerTests()
     {
+        _fixture.Freeze<Mock<IContaRepository>>();
         _request = _fixture.Build<CriaContaCommand>()
                     .Create();
         _handler = _fixture.Create<CriaContaCommandHandler>();
@@ -64,6 +117,14 @@ public class CriaContaCommandHandlerTests
     public async Task Init()
     {
         var result = await _handler.Handle(_request, _cancellationToken);
+
+        _fixture.Freeze<Mock<IContaRepository>>()
+                .Verify(x => x.CreateAsync(
+                    It.Is<Conta>(x =>
+                        x.Documento == _request.Documento &&
+                        x.Email == _request.Email),
+            _cancellationToken), Times.Once);
+
         result.Should().BeSuccess();
     }
 }
@@ -111,7 +172,8 @@ public class CriaContaCommandMappings : Profile
 {
     public CriaContaCommandMappings()
     {
-        //CreateMap<CriaContaCommand, Source>();
+        CreateMap<CriaContaCommand, Conta>();
+        CreateMap<Conta, CriaContaCommand>();
     }
 }
 
@@ -140,9 +202,18 @@ public class CancelaContaCommandTests
 
 public class CancelaContaCommandHandler
 {
+    private readonly IContaRepository _repository;
+
+    public CancelaContaCommandHandler(IContaRepository repository)
+    {
+        _repository = repository;
+    }
+
     public async Task<Result> Handle(CancelaContaCommand request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var conta = request.MapTo<Conta>();
+        await _repository.CancelAsync(conta, cancellationToken);
+        return Result.Ok();
     }
 }
 public class CancelaContaCommandHandlerTests
@@ -210,7 +281,7 @@ public class CancelaContaCommandMappings : Profile
 {
     public CancelaContaCommandMappings()
     {
-        //CreateMap<CancelaContaCommand, Source>();
+        CreateMap<CancelaContaCommand, Conta>();
     }
 }
 
@@ -233,9 +304,17 @@ public class BuscaExtratoQueryTests
 
 public class BuscaExtratoQueryHandler
 {
+    private readonly IMovimentacaoRepository _repository;
+
+    public BuscaExtratoQueryHandler(IMovimentacaoRepository repository)
+    {
+        _repository = repository;
+    }
+
     public async Task<Result> Handle(BuscaExtratoQuery request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var resultado = await _repository.ListMovimentacaoByFilterAsync(request.Conta, cancellationToken);
+        return Result.Ok();
     }
 }
 public class BuscaExtratoQueryHandlerTests
@@ -301,7 +380,7 @@ public class BuscaExtratoQueryMappings : Profile
 {
     public BuscaExtratoQueryMappings()
     {
-        //CreateMap<BuscaExtratoQuery, Source>();
+        CreateMap<BuscaExtratoQuery, Movimentacao>();
     }
 }
 
@@ -330,9 +409,18 @@ public class CriaTransferenciaCommandTests
 
 public class CriaTransferenciaCommandHandler
 {
+    private readonly IMovimentacaoRepository _repository;
+
+    public CriaTransferenciaCommandHandler(IMovimentacaoRepository repository)
+    {
+        _repository = repository;
+    }
+
     public async Task<Result> Handle(CriaTransferenciaCommand request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var conta = request.MapTo<Movimentacao>();
+        await _repository.CreateAsync(conta, cancellationToken);
+        return Result.Ok();
     }
 }
 public class CriaTransferenciaCommandHandlerTests
@@ -400,7 +488,7 @@ public class CriaTransferenciaCommandMappings : Profile
 {
     public CriaTransferenciaCommandMappings()
     {
-        //CreateMap<CriaTransferenciaCommand, Source>();
+        CreateMap<CriaTransferenciaCommand, Movimentacao>();
     }
 }
 
@@ -420,15 +508,23 @@ public class BuscaComprovanteQueryTests
         var request = new BuscaComprovanteQuery(parte, email);
 
         request.Conta.Should().Be("");
-        request.IdMovimentacao.Should().Be(Guid.NewGuid());
+        request.IdMovimentacao.Should().Be(email);
     }
 }
 
 public class BuscaComprovanteQueryHandler
 {
+    private readonly IMovimentacaoRepository _repository;
+
+    public BuscaComprovanteQueryHandler(IMovimentacaoRepository repository)
+    {
+        _repository = repository;
+    }
+
     public async Task<Result> Handle(BuscaComprovanteQuery request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var result = await _repository.GetMovimentacaoByIdAsync(request.IdMovimentacao, cancellationToken);
+        return Result.Ok();
     }
 }
 public class BuscaComprovanteQueryHandlerTests
@@ -495,6 +591,6 @@ public class BuscaComprovanteQueryMappings : Profile
 {
     public BuscaComprovanteQueryMappings()
     {
-        //CreateMap<BuscaComprovanteQuery, Source>();
+        CreateMap<BuscaComprovanteQuery, Movimentacao>();
     }
 }
