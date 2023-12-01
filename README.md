@@ -18,8 +18,10 @@ https://commandprompt.com/education/how-to-install-postgresql-using-docker-compo
 
 ## Git
 ```sh
+git stash
 git pull #Quando na Main
 git rebase main #Quando na branch
+git stash pop
 git add .
 git commit -m "mensagem-commit"
 git push

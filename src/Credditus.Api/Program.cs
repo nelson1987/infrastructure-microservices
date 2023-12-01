@@ -1,14 +1,4 @@
-﻿using Asp.Versioning;
-using Credditus.Api.Configs;
-using Credditus.Api.Features;
-using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Net;
-
-var builder = WebApplication.CreateBuilder(args);
+﻿var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -168,4 +158,11 @@ WithApiVersionSet(versionSet).MapToApiVersion(2.0);
 app.MapGet("/versionneutral", () => "Hello neutral version").
 WithApiVersionSet(versionSet).IsApiVersionNeutral();
 
+
+
+
+app.MapGroup("/accounts")
+    .GroupBankAccount();
+app.MapGroup("/transactions")
+    .GroupTransaction();
 app.Run();
