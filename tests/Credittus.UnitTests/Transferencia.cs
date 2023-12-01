@@ -7,6 +7,8 @@ using FluentResults;
 using AutoFixture.AutoMoq;
 using AutoFixture;
 using FluentResults.Extensions.FluentAssertions;
+using AutoMapper;
+using Moq;
 
 namespace Credittus.UnitTests;
 public class TransferenciaRequestTests
@@ -30,8 +32,10 @@ public class TransferenciaRequestTests
 public class TransferenciaRequestHandlerTests
 {
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
+    private readonly CancellationToken _cancellationToken = CancellationToken.None;
+    private readonly IValidator<TransferenciaRequest> _validator;
     private readonly TransferenciaRequest _request;
-    private readonly TransferenciaRequestHandler _validator;
+    private readonly TransferenciaRequestHandler _handler;
     public TransferenciaRequestHandlerTests()
     {
         var parte = "";
@@ -41,23 +45,49 @@ public class TransferenciaRequestHandlerTests
         var debito = true;
         _request = new TransferenciaRequest(parte, contraParte, tipo, debito);
         _request.ChangeValor(valor);
-        _validator = _fixture.Create<TransferenciaRequestHandler>();
+        
+        Transferencia transferencia = _fixture
+                .Build<Transferencia>()
+                .Create();
+
+        _fixture.Freeze<Mock<ITransferenciaService>>()
+            .Setup(x => x.Create(_request.Parte,_request.ContraParte, _request.Valor, _cancellationToken))
+            .ReturnsAsync(transferencia);
+
+        _fixture.Freeze<Mock<IValidator<TransferenciaRequest>>>()
+            .Setup(x => x.Validate(_request))
+            .Returns(new ValidationResult());
+
+        _handler = _fixture.Create<TransferenciaRequestHandler>();
     }
 
     [Fact]
     public async Task Dado_Request_Valido_Executa_validator_Com_Sucesso()
     {
-        var result = await _validator.Handle(_request, CancellationToken.None);
-        //result.Status.Should().Be(200);
-        Assert.True(result.IsSuccess);
+        var result = await _handler.Handle(_request, _cancellationToken);
+        
+        _fixture.Freeze<Mock<ITransferenciaService>>()
+                .Verify(x => x.Create(_request.Parte,_request.ContraParte, _request.Valor, _cancellationToken)
+                , Times.Once());
+                
+        result.Should().BeSuccess();
     }
 
     [Fact]
     public async Task Dado_Request_Invalido_Executa_validator_Sem_Sucesso()
     {
-        _request.ChangeValor(0);
-        var result = await _validator.Handle(_request, CancellationToken.None);
-        result.Should().BeSuccess();
+            _fixture.Freeze<Mock<IValidator<TransferenciaRequest>>>()
+                    .Setup(x => x.Validate(_request))
+                    .Returns(new ValidationResult(new[] { new ValidationFailure("prop", "error") }));
+        //_validator.Should().NotBeNull();    
+        var result = await _handler.Handle(_request, _cancellationToken);
+
+        result.Should().BeFailure();
+
+        // result.Should().BeOfType<BadRequestObjectResult>()
+        //         .Which.Value.Should().BeOfType<SerializableError>()
+        //         .Which.Should().BeEquivalentTo(new Dictionary<string, object> { { "prop", new[] { "error" } } });
+        
     }
 }
 
@@ -94,10 +124,12 @@ public class TransferenciaRequestValidatorTests
 public class TransferenciaRequestHandler
 {
     private readonly IValidator<TransferenciaRequest> _validator;
+    private readonly ITransferenciaService _service;
 
-    public TransferenciaRequestHandler(IValidator<TransferenciaRequest> validator)
+    public TransferenciaRequestHandler(IValidator<TransferenciaRequest> validator, ITransferenciaService service)
     {
         _validator = validator;
+        _service = service;
     }
 
     public async Task<Result> Handle(TransferenciaRequest request, CancellationToken cancellationToken)
@@ -108,8 +140,13 @@ public class TransferenciaRequestHandler
         {
             return validationResult.ToFailResult();
         }
+        await _service.Create(request.Parte, request.ContraParte, request.Valor, cancellationToken);
         return Result.Ok();
     }
+}
+public interface ITransferenciaService
+{
+    Task<Transferencia> Create(string debitante, string creditante, decimal valor, CancellationToken cancellationToken);
 }
 public static class ValidationResultExtensions
 {
@@ -141,14 +178,40 @@ public class TransferenciaRequestValidator : AbstractValidator<TransferenciaRequ
     }
 }
 
+public class Transferencia
+{
+    public decimal Valor { get; set; }
+    public string Parte { get; set; }
+    public string ContraParte { get; set; }
+    public TipoTransacao Tipo { get; set; }
+    public bool Debito { get; set; }
+}
+public class TransferenciaRequestMapper : Profile
+{
+    public TransferenciaRequestMapper()
+    {
+        CreateMap<Transferencia, TransferenciaRequest>();
+    }
+}
 
+public static class ObjectMapper
+{
+    private static readonly Lazy<IMapper> Lazy = new(() =>
+    {
+        var config = new MapperConfiguration(cfg => cfg.AddMaps(typeof(ObjectMapper).Assembly));
+        return config.CreateMapper();
+    });
+
+    public static IMapper Mapper => Lazy.Value;
+
+    public static T MapTo<T>(this object source) => Mapper.Map<T>(source);
+}
 public class ObjectMapperTests
 {
     [Fact]
     public void ValidateMappingConfigurationTest()
     {
         var mapper = ObjectMapper.Mapper;
-
         mapper.ConfigurationProvider.AssertConfigurationIsValid();
     }
 }

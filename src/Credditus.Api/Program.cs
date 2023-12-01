@@ -1,4 +1,15 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using System.Net;
+using Asp.Versioning;
+using BankAccounts;
+using Credditus.Api.Configs;
+using Credditus.Api.Features;
+using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -80,7 +91,7 @@ app.MapPost("/v{version:apiVersion}/Addresses", ([FromBody] Address address,
     return Results.ValidationProblem(validationResult.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
 }).WithOpenApi(operation =>
 {
-    OpenApiGenerator
+    //OpenApiGenerator
     operation.Summary = "This is a summary";
     operation.Description = "This is a description";
     operation.OperationId = "GetTodos";
