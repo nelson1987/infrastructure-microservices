@@ -14,7 +14,7 @@ namespace Credittus.UnitTests;
 public class TransferenciaRequestTests
 {
     [Fact]
-    public async Task Quando_Transferencia_For_Pedida()
+    public async Task Quando_Transferencia_For_Valida()
     {
         var parte = "";
         var contraParte = "";
