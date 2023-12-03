@@ -106,3 +106,6 @@ https://learn.microsoft.com/pt-br/visualstudio/containers/tutorial-multicontaine
 
 # Docker in Integrationtests
 https://github.com/mariotoffia/FluentDocker
+
+https://blog.joaograssi.com/using-docker-compose-for-your-asp-net-ef-core-integration-tests/
+https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-8.0
