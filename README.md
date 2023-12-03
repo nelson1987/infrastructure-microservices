@@ -93,9 +93,16 @@ https://www.alura.com.br/artigos/como-criar-um-readme-para-seu-perfil-github?_gl
 
 https://slides.com/daianealvesrj/software-livre-para-empreendedores
 https://cursos.alura.com.br/course/git-github-branching-conflitos-pull-requests/task/57949
+https://guiferreira.me/
 
 # Versioning 
 https://renatogroffe.medium.com/net-7-minimal-apis-versionando-apis-rest-de-forma-descomplicada-f14cde4bf3a5
 
 # OpenApiGenerator
 https://github.com/dotnet/aspnetcore/blob/7e9b1492baa02211842422566c0e8710886cace1/src/OpenApi/src/OpenApiGenerator.cs
+
+# Redis
+https://learn.microsoft.com/pt-br/visualstudio/containers/tutorial-multicontainer?view=vs-2022
+
+# Docker in Integrationtests
+https://github.com/mariotoffia/FluentDocker
