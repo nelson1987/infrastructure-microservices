@@ -109,3 +109,4 @@ https://github.com/mariotoffia/FluentDocker
 
 https://blog.joaograssi.com/using-docker-compose-for-your-asp-net-ef-core-integration-tests/
 https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-8.0
+https://medium.com/geekculture/is-there-a-better-way-of-writing-integration-tests-in-using-containers-net-233de3a23891
